@@ -4,16 +4,6 @@ from tempfile import NamedTemporaryFile # for outputted, uncompiled C code
 from sys import argv                    # use CLI args for file input
 import subprocess                       # for running gcc on uncompiled C
 from os import unlink                   # for deleting temp file
-# Temporary C file that will be written to and compiled later
-export_filename = "./temp.c"
-
-errors: list[str] = []
-
-def exit_with_errors():
-	"""Given a list of errors, print the errors and exit with exit code 1."""
-	global errors
-	print(*(f"ERROR: {error}" for error in errors), sep="\n", end="\nSIMPL exited with exit code 1.\n")
-	exit(1)
 
 # Check args are correct
 execname = argv[0]
@@ -41,7 +31,7 @@ except FileNotFoundError:
 
 # Check that it's a valid file
 if ".simpl" not in filepath:
-	errors.append(f"Files should end in .simpl extension; '{filepath}' does not")
+	print(f"{execname}: {filepath} is not a valid SIMPL file")
 
 # Read file
 source_code = str()
@@ -58,15 +48,13 @@ def preprocess(source: str) -> str | None: # type: ignore[return]
 			depth += 1
 		elif char == ']':
 			if depth == 0:
-				errors.append(f"Unexpected ']' at position {i}")
+				raise SyntaxError(f"Unexpected ']' at position {i}")
 				break
 			depth -= 1
 		elif depth == 0 and char not in ' \r\n\t':
 			result.append(char)
 	if depth != 0:
-		errors.append(f"Unmatched '['")
-	if errors:
-		exit_with_errors()
+		raise SyntaxError(f"Unmatched '['")
 	else:
 		return ''.join(result)
 
@@ -534,7 +522,7 @@ def main(source: str) -> int:
 	match_table: dict = match_parentheses(tokens)
 	c_transpiled: list[str] = generate_code(tokens, match_table)
 	if compiled_name == '-S':
-		print(c_transpiled)
+		print(*c_transpiled, sep="\n")
 		return 0
 	# Unrecognized switch
 	if compiled_name[0] == '-':
