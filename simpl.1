@@ -1,0 +1,96 @@
+.TH SIMPL 1 April\ 22nd,\ 2026 Asher\ Vahalik SIMPL\ Compiler
+.SH NAME
+\fBsimpl\fR - the official compiler of the SIMPL programming language
+.SH SYNOPSIS
+\fBsimpl\fR \fIfile\fR [\fIoutput\fR|-E|-T|-S]
+
+\fBpython3 simpl_comp.py\fR \fIfile\fR [\fIoutput\fR|-E|-T|-S]
+.SH DESCRIPTION
+If \fIoutput\fR is set, then the SIMPL code from a ".simpl"-extension \fIfile\fR is parsed, transpiled to \fBC\fR, and compiled.
+By default, \fBgcc\fR is set as the compiler for compatibility across macOS and Linux.
+
+If one of the flags is set instead of \fIoutput\fR, \fIfile\fR is processed according to the documentation below.
+Where applicable, the flags are designed to be similar to \fBclang\fR/\fBgcc\fR to ease the compilation transition for those coming from languages like C.
+.SH OPTIONS
+.TP
+.BR -E
+Run the preprocessor, returning the preprocessed text.
+This involves stripping all newlines and []-enclosed comments.
+.TP
+.BR -T
+Run the preprocessor and tokenizer, returning a list of all tokens.
+.TP
+.BR -S
+Run everything up to the C transpiler, returning the transpiled C code.
+.SH LANGUAGE OVERVIEW
+\fBSIMPL\fR is self-explanatory: it stands for \fB"Super Interesting Minimalist Programming Language"\fR.
+If you are such a type of person, you may substitute \fB"Super"\fR for \fB"Somewhat"\fR.
+
+Living up to its name, the \fBSIMPL\fR language is very basic, employing only a handful of basic instructions.
+For those familiar with \fBBF\fR, most of the basic instructions are the same.
+However, \fBSIMPL\fR is more flexible and features more instructions than BF.
+
+The basic structure of \fBSIMPL\fR is, of course, quite simple.
+The program starts with either a programmer-defined number of or 128 integer-type \fBmemory cells\fR which are initialized to 0.
+These cells can be navigated between, incremented/decremented, compared, and reset to 0.
+Certain instructions also support \fBarguments\fR in the form of a \fBpositive, non-zero integer\fR or a \fB{}-enclosed expression\fR.
+
+Comments are enclosed in square brackets \fB[]\fR, and all whitespace is ignored, meaning SIMPL code can be written and annotated however the programmer desires.
+.SH LANGUAGE INSTRUCTIONS
+.TP
+In the following list, square brackets \fB[]\fR represent an optional value, and the pipe \fB|\fR represents "or".
+.TP
+.BR ~\fInum\fR
+Set the number of memory cells to be used in the program.
+If \fInum\fR is greater than \fB50,000,000\fR (meaning the program would be using slightly over 200MB of RAM to run), an error is thrown.
+This instruction must appear at the beginning of the program and nowhere, otherwise an error is thrown.
+If omitted, the number of memory cells is set to \fB128\fR.
+.TP
+.BR >\fR[\fInum\fR|{\fIexpr\fR}]
+If \fInum\fR is given, move \fInum\fR cells to the right.
+If {\fIexpr\fR} is given, evaluate \fIexpr\fR and move that amount.
+If neither are given, move \fB1\fR.
+.TP
+.BR <\fR[\fInum\fR|{\fIexpr\fR}]
+Same as \fB>\fR, except move to the left.
+.TP
+.BR +\fR[\fInum\fR|{\fIexpr\fR}]
+If \fInum\fR is given, increment the current cell by \fInum\fR.
+If an {\fIexpr\fR} is given, evaluate \fIexpr\fR and increment the cell by that amount.
+If neither are given, increment the cell by \fB1\fR.
+.TP
+.BR -\fR[\fInum\fR|{\fIexpr\fR}]
+Same as \fB+\fR, except decrement.
+.TP
+.BR @
+Reset the value of the current cell to 0.
+.TP
+.BR !
+Print the value of the current cell as an integer.
+For example, if the value of the cell is 69, print "69".
+.TP
+.BR !!
+Print the value of the current cell as an ASCII character.
+For example, if the value of the cell is 69, print "E".
+.TP
+.BR ?
+Get user input, distributing the ASCII values of each character across the next length(input) cells.
+Since SIMPL is implemented in C, the input buffer has a predetermined size, which is equal to the total number of cells.
+.TP
+.BR ??
+Same as \fB?\fR, except sets the current cell value to the sum of the ASCII values of all the characters.
+.TP
+One important thing to notice here is that having two distinct instructions using the same character can cause undefined or error-producing behavior, and thus any odd number of "\fB!\fR"s or "\fB?\fR"s will have the compiler raise an error.
+.TP
+.BR (\fR{\fIcondition\fR}\fIsequence\fR[\fB|\fR]\fB)
+Evaluate \fIcondition\fR, and if \fBtrue\fR, run \fIsequence\fR (this transpiles to a C \fBif\fR statement).
+If \fB|\fR is present at the end of \fIsequence\fR, \fIcondition\fR is evaluated and \fIsequence\fR is looped continuously until \fIcondition\fR evaluates to \fBfalse\fR (this transpiles to a C \fBwhile\fR statement).
+
+\fIcondition\fR supports all basic comparison operators, which include ==, !=, <=, >=.
+Expressions in general also support +, -, *, /.
+.SH BUGS AND MORE INFO
+To report bugs or get more information, go to \fIhttps://github.com/ashervahalik/simpl/\fR.
+.SH SEE ALSO
+python3(1), gcc(1), clang(1)
+.SH COPYRIGHT
+2026 Asher Vahalik.

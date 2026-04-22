@@ -1,0 +1,15 @@
+[SIMPL hello world program.]
+~1     [only use 1 memory cell]
++72!!  [set to ASCII "H" and print]
++29!!  [set to ASCII "e" and print]
++7!!!! [and so on...]
++3!!
+@+44!! [reset to 0 and set to ASCII ","]
+-12!!
++87!!
+-8!!
++3!!
+-6!!
+-8!!
+@+33!! [ASCII "!"]
+-23!!  [ASCII newline]

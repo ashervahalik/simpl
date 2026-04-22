@@ -1,0 +1,21 @@
+[SIMPL greeter program.]
+~128    [set cell count to 128 (this determines buffer size)]
+
+["What is your name? "]
++87!!+17!!-7!!+19!!
+@+32!!+73!!+10!!
+@+32!!+89!!-10!!+6!!-3!!
+@+32!!+78!!-13!!+12!!-8!!
+@+63!!-31!!
+
+[Move 1 cell right, get input and distribute across cells]
+>?
+
+[Use cell 0 for greeter text ("Hello, _!")]
+<@+72!!+29!!+7!!!!+3!!
+@+44!!-12!!
+>       [move 1 right to prep for name printing]
+({#!=0} [until cell value is 0...]
+!!>|)   [print cell ASCII value, move to next cell, store cell index, and loop]
+:<{;}   [move back to cell 0]
+@+33!!-23!!
