@@ -7,7 +7,7 @@
 \fBpython3 simpl_comp.py\fR \fIfile\fR [\fIoutput\fR|-E|-T|-S]
 .SH DESCRIPTION
 If \fIoutput\fR is set, then the SIMPL code from a ".simpl"-extension \fIfile\fR is parsed, transpiled to \fBC\fR, and compiled.
-By default, \fBgcc\fR is set as the compiler for compatibility across macOS and Linux.
+By default, \fBgcc\fR is set as the compiler for compatibility across macOS and Linux; currently, this can be changed by opening up \fBsimpl.py\fR, navigating all the way down to \fBmain()\fR, and changing the \fBcompile(c_transpiled)\fR function call to add a \fBcompiler\fR=\fB"<your compiler>"\fR parameter.
 
 If one of the flags is set instead of \fIoutput\fR, \fIfile\fR is processed according to the documentation below.
 Where applicable, the flags are designed to be similar to \fBclang\fR/\fBgcc\fR to ease the compilation transition for those coming from languages like C.
@@ -36,6 +36,7 @@ These cells can be navigated between, incremented/decremented, compared, and res
 Certain instructions also support \fBarguments\fR in the form of a \fBpositive, non-zero integer\fR or a \fB{}-enclosed expression\fR.
 
 Comments are enclosed in square brackets \fB[]\fR, and all whitespace is ignored, meaning SIMPL code can be written and annotated however the programmer desires.
+For right now, there is one exception, which you can find below in the \fIconditional\fR statement.
 .SH LANGUAGE INSTRUCTIONS
 .TP
 In the following list, square brackets \fB[]\fR represent an optional value, and the pipe \fB|\fR represents "or".
@@ -43,7 +44,7 @@ In the following list, square brackets \fB[]\fR represent an optional value, and
 .BR ~\fInum\fR
 Set the number of memory cells to be used in the program.
 If \fInum\fR is greater than \fB50,000,000\fR (meaning the program would be using slightly over 200MB of RAM to run), an error is thrown.
-This instruction must appear at the beginning of the program and nowhere, otherwise an error is thrown.
+This instruction must appear at the beginning of the program and nowhere else, otherwise an error is thrown.
 If omitted, the number of memory cells is set to \fB128\fR.
 .TP
 .BR >\fR[\fInum\fR|{\fIexpr\fR}]
@@ -76,6 +77,7 @@ For example, if the value of the cell is 69, print "E".
 .BR ?
 Get user input, distributing the ASCII values of each character across the next length(input) cells.
 Since SIMPL is implemented in C, the input buffer has a predetermined size, which is equal to the total number of cells.
+Additionally, strings are null-terminated, meaning to print a stored string you can simply iterate through cells until you reach one that has a value of 0.
 .TP
 .BR ??
 Same as \fB?\fR, except sets the current cell value to the sum of the ASCII values of all the characters.
@@ -88,6 +90,24 @@ If \fB|\fR is present at the end of \fIsequence\fR, \fIcondition\fR is evaluated
 
 \fIcondition\fR supports all basic comparison operators, which include ==, !=, <=, >=.
 Expressions in general also support +, -, *, /.
+.TP
+.BR :
+Store the index of the current cell in an independent variable.
+.TP
+.BR ;
+Move back to the stored cell.
+.SH BUILT-IN VARIABLES
+Built-in variables can be used to evaluate conditionals or execute sequences.
+They are only valid within the context of expressions.
+.TP
+.BR ;
+Recall the stored cell index.
+.TP
+.BR #
+Get the integer value of the current cell.
+.TP
+.BR ##
+Get the total number of cells.
 .SH BUGS AND MORE INFO
 To report bugs or get more information, go to \fIhttps://github.com/ashervahalik/simpl/\fR.
 .SH SEE ALSO
