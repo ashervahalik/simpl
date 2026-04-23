@@ -537,7 +537,6 @@ if __name__ == '__main__':
 		exit_code = main(source_code)
 		if exit_code == 1:
 			print(f"Use 'man ./simpl.1' to view compiler + language documentation.")
-		print(f"Exited with exit code {exit_code}.")
 		exit(exit_code)
 	except SyntaxError as e:
 		print(f"SyntaxError: {e}")
